@@ -1,0 +1,22 @@
+#!/usr/bin/env ansible-playbook
+#
+# generate_inventory.yml
+#
+# generates kubernetes inventory from terraform state json file
+#
+---
+- name: generate inventory from json
+  hosts: localhost
+  connection: local
+  vars:
+    terraform_state_file: "{{ lookup('file', '../terraform/terraform.tfstate') }}" 
+  tasks:
+
+  - debug:
+      var: terraform_state_file
+
+  - name: generate inventory
+    template:
+      src: inventory.j2
+      dest: inventories/kubeit_inventory
+

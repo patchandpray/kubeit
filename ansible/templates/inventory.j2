@@ -1,0 +1,4 @@
+[kubeit]
+{% for address in terraform_state_file.modules[0].outputs.address.value %}
+{{ address }}
+{% endfor %}
