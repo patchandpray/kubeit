@@ -1,0 +1,55 @@
+#!/usr/bin/env ansible-playbook
+#
+# install.yml
+---
+- name: install kubernetes
+  hosts: kubeit
+  become: True
+  vars:
+    k8s_repo: deb http://apt.kubernetes.io/ kubernetes-xenial main
+    k8s_repo_gpg_key: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+    k8s_network_configuration_file: https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
+    packages:
+      - docker.io
+      - kubeadm
+      - kubelet
+    pod_network_cidr: 10.132.0.0/20
+
+  tasks:
+  - name: add kubernetes repo
+    apt_repository:
+      repo: "{{ k8s_repo}}"
+      state: present
+
+  - name: add gpg key for repo | {{ k8s_repo}}
+    apt_key:
+      url: "{{ k8s_repo_gpg_key }}"
+      state: present
+
+  - name: apt-get update 
+    apt:
+      update_cache: yes
+
+  - name: install packages
+    apt:
+      name: "{{ item }}"
+      state: present
+    with_items: "{{ packages }}"
+
+  - name: get kube-flannel.yml pod network configuration
+    get_url:
+      url: "{{ k8s_network_configuration_file }}"
+      dest: ~/kube-flannel.yml
+
+  - name: configure kube-flannel.yml with network | {{ pod_network_cidr }}
+    lineinfile:
+      path: ~/kube-flannel.yml
+      regexp: '"Network":'
+      line: '      "Network": "{{ pod_network_cidr }}",'
+
+  - name: kubeadm init
+    command: | 
+      kubeadm init --pod-network-cidr {{ pod_network_cidr }}
+
+  - name: apply kube-flannel pod network
+    command: kubectl apply -f ~/kube-flannel.yml
