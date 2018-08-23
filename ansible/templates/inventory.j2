@@ -5,3 +5,8 @@
 
 [kubeit:master]
 {{ terraform_state_file.modules[0].outputs.address.value[0] }}
+
+[kubeit:nodes]
+{% for address in terraform_state_file.modules[0].outputs.address.value[1:] %}
+{{ address }}
+{% endfor %}
