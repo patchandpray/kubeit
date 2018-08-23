@@ -25,7 +25,7 @@ output "node_info" {
 
 resource "google_compute_instance" "server" {
   name = "ubuntu-k8s-${count.index}"
-  count = 1
+  count = 2
   machine_type = "n1-standard-2"
   zone = "${var.zone}"
   boot_disk {

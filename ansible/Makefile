@@ -13,6 +13,10 @@ ping:
 install:
 	ansible-playbook install.yml $(verbosity)
 
-.PHONY: ssh
-ssh:
+.PHONY: master
+master:
+	ansible-playbook master.yml $(verbosity)
+
+.PHONY: ssh_master
+ssh_master:
 	ssh -i ~/.ssh/google_compute_engine tim_tvdkeer_nl@$(shell cat inventories/kubeit_inventory | sed -n 2p)

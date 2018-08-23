@@ -1,0 +1,47 @@
+#!/usr/bin/env ansible-playbook
+#
+# master.yml
+---
+- name: start master for kubernetes
+  hosts: kubeit:master
+  vars:
+    k8s_network_configuration_file: https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
+    pod_network_cidr: 10.132.0.0/20
+    admin_user: tim_tvdkeer_nl
+
+  tasks:
+  #TODO - add task for idempotency kubeadm init
+
+#  - name: kubeadm init
+#    command: | 
+#      kubeadm init --pod-network-cidr {{ pod_network_cidr }}
+#    become: True
+
+  - name: create .kube dir for {{ admin_user }}
+    file:
+      path: "/home/{{ admin_user }}/.kube"
+      state: directory
+      owner: "{{ admin_user }}"
+    become: True
+
+  - name: copy kube configuration file to .kube for {{ admin_user }}
+    copy:
+      src: /etc/kubernetes/admin.conf
+      dest: "/home/{{ admin_user }}/.kube/config"
+      owner: "{{ admin_user }}"
+      remote_src: True
+    become: True
+
+  - name: get kube-flannel.yml pod network configuration
+    get_url:
+      url: "{{ k8s_network_configuration_file }}"
+      dest: ~/kube-flannel.yml
+
+  - name: configure kube-flannel.yml with network | {{ pod_network_cidr }}
+    lineinfile:
+      path: ~/kube-flannel.yml
+      regexp: '"Network":'
+      line: '      "Network": "{{ pod_network_cidr }}",'
+
+  - name: apply kube-flannel pod network
+    command: kubectl apply -f ~/kube-flannel.yml
