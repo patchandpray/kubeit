@@ -10,12 +10,10 @@
     admin_user: tim_tvdkeer_nl
 
   tasks:
-  #TODO - add task for idempotency kubeadm init
-
-#  - name: kubeadm init
-#    command: | 
-#      kubeadm init --pod-network-cidr {{ pod_network_cidr }}
-#    become: True
+  - name: kubeadm init
+    command: | 
+      kubeadm init --pod-network-cidr {{ pod_network_cidr }}
+    become: True
 
   - name: create .kube dir for {{ admin_user }}
     file:

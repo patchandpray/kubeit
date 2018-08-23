@@ -1,0 +1,10 @@
+#!/usr/bin/env ansible-playbook
+#
+# node.yml
+---
+- name: add node to kubernetes cluster
+  hosts: kubeit:nodes
+  vars:
+
+  tasks:
+

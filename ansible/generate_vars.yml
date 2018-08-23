@@ -1,0 +1,19 @@
+#!/usr/bin/env ansible-playbook
+#
+# generate_vars.yml
+#
+# generates kubernetes vars from terraform state json file
+#
+---
+- name: generate inventory from json
+  hosts: localhost
+  connection: local
+  vars:
+    terraform_state_file: "{{ lookup('file', '../terraform/terraform.tfstate') }}" 
+  tasks:
+
+  - name: generate vars
+    template:
+      src: kubeit_vars.yml.j2
+      dest: kubeit_vars.yml
+

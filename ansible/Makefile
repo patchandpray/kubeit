@@ -5,6 +5,10 @@ generate_inventory:
 	-mkdir inventories
 	ansible-playbook generate_inventory.yml
 
+.PHONY: generate_vars
+generate_vars:
+	ansible-playbook generate_vars.yml
+
 .PHONY: ping
 ping:
 	ansible kubeit -m ping
@@ -16,6 +20,10 @@ install:
 .PHONY: master
 master:
 	ansible-playbook master.yml $(verbosity)
+
+.PHONY: node
+node:
+	ansible-playbook node.yml $(verbosity)
 
 .PHONY: ssh_master
 ssh_master:

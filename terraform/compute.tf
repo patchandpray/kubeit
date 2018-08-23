@@ -9,8 +9,11 @@ output "name" {
   value = ["${google_compute_instance.server.*.name}"]
 }
 
-output "address" {
+output "public_ip" {
   value = ["${google_compute_instance.server.*.network_interface.0.access_config.0.nat_ip}"]
+}
+output "private_ip"{
+  value = ["${google_compute_instance.server.*.network_interface.0.address}"]
 }
 
 output "api_url" {
